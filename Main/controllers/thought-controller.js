@@ -12,7 +12,7 @@ const thoughtController = {
     }
   },
   // get single thought by id
-  async getThoughtById(req, res) {
+  async getThoughtsById(req, res) {
     try {
       const thought = await Thought.findById({_id:req.params.thoughtId});
 

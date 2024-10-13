@@ -12,7 +12,7 @@ const userController = {
     }
   },
   // get single user by id
-  async getSingleUser(req, res) {
+  async getUserById(req, res) {
     try {
       const userData = await User.findById(req.params.id)
         .populate("friends")
