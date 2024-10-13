@@ -4,79 +4,63 @@ const thoughtController = {
   // get all thoughts
   async getThoughts(req, res) {
     try {
-      const dbThoughtData = await Thought.find().sort({ createdAt: -1 });
+      const thoughts = await Thought.find();
 
-      res.json(dbThoughtData);
+      res.json(thoughts);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
     }
   },
   // get single thought by id
-  async getSingleThought(req, res) {
+  async getThoughtById(req, res) {
     try {
-      const dbThoughtData = await Thought.findOne({
-        _id: req.params.thoughtId,
-      });
+      const thought = await Thought.findById(
+        req.params.id
+      );
 
-      if (!dbThoughtData) {
+      if (!thought) {
         return res.status(404).json({ message: "No thought with this id!" });
+      } else {
+        res.json(thought);
       }
-
-      res.json(dbThoughtData);
     } catch (err) {
-      console.log(err);
       res.status(500).json(err);
     }
   },
+
   // create a thought
   async createThought(req, res) {
     try {
-      const dbThoughtData = await Thought.create(req.body);
-
-      const dbUserData = await User.findOneAndUpdate(
-        { _id: req.body.userId },
-        { $push: { thoughts: dbThoughtData._id } },
-        { new: true }
-      );
-
-      if (!dbUserData) {
-        return res
-          .status(404)
-          .json({ message: "Thought created but no user with this id!" });
-      }
-
-      res.json({ message: "Thought successfully created!" });
-    } catch (err) {
-      console.log(err);
+      const thought = await Thought.create(req.body);
+      } catch (err) {
       res.status(500).json(err);
     }
   },
+
   // update thought
   async updateThought(req, res) {
-    const dbThoughtData = await Thought.findOneAndUpdate(
-      { _id: req.params.thoughtId },
-      { $set: req.body },
-      { runValidators: true, new: true }
+    const thought = await Thought.findByIdAndUpdate(
+      req.params.thoughtId, req.body, { new: true }
     );
 
-    if (!dbThoughtData) {
+    if (!thought) {
       return res.status(404).json({ message: "No thought with this id!" });
+    } else {
+      res.json(thought);
     }
-
-    res.json(dbThoughtData);
-
-    console.log(err);
+    } catch (err) {
     res.status(500).json(err);
+    }
   },
+
   // delete thought
   async deleteThought(req, res) {
     try {
-      const dbThoughtData = await Thought.findOneAndRemove({
-        _id: req.params.thoughtId,
-      });
+      const thought = await Thought.findByIdAndRemove(
+        req.params.thoughtId);
 
-      if (!dbThoughtData) {
+      if (!thought) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
@@ -103,17 +87,17 @@ const thoughtController = {
   // add a reaction to a thought
   async addReaction(req, res) {
     try {
-      const dbThoughtData = await Thought.findOneAndUpdate(
+      const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
         { $addToSet: { reactions: req.body } },
         { runValidators: true, new: true }
       );
 
-      if (!dbThoughtData) {
+      if (!thought) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
-      res.json(dbThoughtData);
+      res.json(thought);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -122,17 +106,17 @@ const thoughtController = {
   // remove reaction from a thought
   async removeReaction(req, res) {
     try {
-      const dbThoughtData = await Thought.findOneAndUpdate(
-        { _id: req.params.thoughtId },
+      const thought = await Thought.findByIdAndUpdate(
+        req.params.thoughtId,
         { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
 
-      if (!dbThoughtData) {
+      if (!thought) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
-      res.json(dbThoughtData);
+      res.json(thought);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
