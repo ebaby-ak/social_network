@@ -14,9 +14,7 @@ const thoughtController = {
   // get single thought by id
   async getThoughtById(req, res) {
     try {
-      const thought = await Thought.findById(
-        req.params.id
-      );
+      const thought = await Thought.findById({_id:req.params.thoughtId});
 
       if (!thought) {
         return res.status(404).json({ message: "No thought with this id!" });
@@ -32,13 +30,14 @@ const thoughtController = {
   async createThought(req, res) {
     try {
       const thought = await Thought.create(req.body);
+      res.json(thought);
       } catch (err) {
       res.status(500).json(err);
     }
   },
 
   // update thought
-  async updateThought(req, res) {
+  async updateThoughtById(req, res) {
     const thought = await Thought.findByIdAndUpdate(
       req.params.thoughtId, req.body, { new: true }
     );
@@ -53,15 +52,14 @@ const thoughtController = {
   // delete thought
   async deleteThought(req, res) {
     try {
-      const thought = await Thought.findByIdAndRemove(
-        req.params.thoughtId);
+      const thought = await Thought.findByIdAndRemove({_id:req.params.thoughtId});
 
       if (!thought) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
       // remove thought id from user's `thoughts` field
-      const userData = User.findOneAndUpdate(
+      const userData = User.findByIdAndUpdate(
         { thoughts: req.params.thoughtId },
         { $pull: { thoughts: req.params.thoughtId } },
         { new: true }
@@ -103,7 +101,7 @@ const thoughtController = {
   async removeReaction(req, res) {
     try {
       const thought = await Thought.findByIdAndUpdate(
-        req.params.thoughtId,
+        {_id: req.params.thoughtId},
         { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
