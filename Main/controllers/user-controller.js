@@ -39,8 +39,7 @@ const userController = {
   // update a user
   async updateUser(req, res) {
     try {
-      const userData = await User.findIdAndUpdate({req.params.id, req.body, { new: true }}
-      );
+      const userData = await User.findIdAndUpdate(req.params.id, req.body, { new: true });
 
       if (!userData) {
         return res.status(404).json({ message: "No user with this id!" });

@@ -8,7 +8,6 @@ const thoughtController = {
 
       res.json(thoughts);
     } catch (err) {
-      console.log(err);
       res.status(500).json(err);
     }
   },
@@ -49,9 +48,6 @@ const thoughtController = {
     } else {
       res.json(thought);
     }
-    } catch (err) {
-    res.status(500).json(err);
-    }
   },
 
   // delete thought
@@ -65,13 +61,13 @@ const thoughtController = {
       }
 
       // remove thought id from user's `thoughts` field
-      const dbUserData = User.findOneAndUpdate(
+      const userData = User.findOneAndUpdate(
         { thoughts: req.params.thoughtId },
         { $pull: { thoughts: req.params.thoughtId } },
         { new: true }
       );
 
-      if (!dbUserData) {
+      if (!userData) {
         return res
           .status(404)
           .json({ message: "Thought created but no user with this id!" });
