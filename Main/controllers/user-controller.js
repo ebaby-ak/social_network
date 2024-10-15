@@ -14,7 +14,7 @@ const userController = {
   // get single user by id
   async getUserById(req, res) {
     try {
-      const userData = await User.findById(req.params.id)
+      const userData = await User.findById(req.params.userId)
         .populate("friends")
         .populate("thoughts");
 
@@ -39,7 +39,7 @@ const userController = {
   // update a user
   async updateUser(req, res) {
     try {
-      const userData = await User.findIdAndUpdate(req.params.id, req.body, { new: true });
+      const userData = await User.findByIdAndUpdate(req.params.userId, req.body, { new: true });
 
       if (!userData) {
         return res.status(404).json({ message: "No user with this id!" });
@@ -53,14 +53,14 @@ const userController = {
   // delete user (BONUS: and delete associated thoughts)
   async deleteUser(req, res) {
     try {
-      const userData = await User.findByIdAndDelete(req.params.id);
+      const userData = await User.findByIdAndDelete(req.params.userId);
 
       if (!userData) {
         return res.status(404).json({ message: "No user with this id!" });
       }
 
       // BONUS: get ids of user's `thoughts` and delete them all
-      await Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
+      await Thought.deleteMany({ _id: { $in: userData.thoughts } });
       res.json({ message: "User and associated thoughts deleted!" });
     } catch (err) {
       res.status(500).json(err);
